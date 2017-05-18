@@ -1,0 +1,197 @@
+HTTP/1.1 401 Authorization Required
+Server: HTTPd/1.0
+Date: Sat, 27 Nov 2004 10:18:15 GMT
+WWW-Authenticate: Basic realm="Secure Area"
+Content-Type: text/html
+Content-Length: 311
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>My Webpage</title>
+	<script type="text/javascript">
+/////////////////////////////////////////////////////////////////////////
+////                                                                 ////
+////  AJAX routines for rx/tx of data without having to reload page. ////
+////                                                                 ////
+////  Written by CCS, Inc.                    http://www.ccsinfo.com ////
+////                                                                 ////
+////        (C) Copyright 1996,2013 Custom Computer Services         ////
+//// This source code may only be used by licensed users of the CCS  ////
+//// C compiler.  This source code may only be distributed to other  ////
+//// licensed users of the CCS C compiler.  No other use,            ////
+//// reproduction or distribution is permitted without written       ////
+//// permission.                                                     ////
+/////////////////////////////////////////////////////////////////////////
+var ajaxGet;
+var t;
+var waiting = 0;
+var tValid = 0;
+var nextCgi = "";
+var lastCgi = "";
+var ios6workaround = 0;
+
+function setStartTime()
+{
+   tValid = 1;
+   t = setTimeout('ajax()', 500);
+}
+
+function ajax()
+{
+   if (waiting)
+   {
+      waiting--;
+      if (waiting == 0)
+      {
+         if (lastCgi != "")
+         {
+            if (nextCgi == "")
+               nextCgi = lastCgi;
+            else
+               nextCgi = lastCgi + "&" + nextCgi;
+         }
+      }
+   }
+
+   if (!waiting)
+   {
+      ajaxGet=GetXmlHttpObject();
+
+      if (ajaxGet==null)
+      {
+         alert ("Your browser does not support AJAX!");
+         return;
+      }
+
+      waiting = 5;  //wait 2.5 seconds for a response
+
+      ajaxGet.open("POST", "index.xml", true);
+
+      ajaxGet.onreadystatechange = stateChanged;
+
+      if (nextCgi != "")
+      {
+         ajaxGet.send(nextCgi);
+         lastCgi = nextCgi;
+         nextCgi = "";
+      }
+      else
+      {
+         ajaxGet.send("IGNOREDTAG="+ios6workaround);
+
+         if (++ios6workaround > 255)
+            ios6workaround = 0;
+      }
+   }
+
+   setStartTime();
+}
+
+function sendCgi(cmd, value)
+{
+   if (nextCgi != "")
+      nextCgi += "&";
+
+   nextCgi += cmd + "=" + value;
+}
+
+function GetElementNodeValue(xmlDoc, id)
+{
+   return xmlDoc.getElementsByTagName(id)[0].childNodes[0].nodeValue;
+}
+
+function GetElementAttributeValue(xmlDoc, element, attribute)
+{
+   var n;
+   var i;
+
+   n = xmlDoc.getElementsByTagName(element)[0].attributes.length;
+
+   for (i=0; i<n; i++)
+   {
+      if (xmlDoc.getElementsByTagName(element)[0].attributes[i].name == attribute)
+      {
+         return xmlDoc.getElementsByTagName(element)[0].attributes[i].value;
+      }
+   }
+
+   return "";
+}
+
+function UpdateExistingTable(xmlDoc)
+{
+   var i = 0;
+
+   for(;;)
+   {
+      var id = "dyn"+i;
+      i++;
+      if (document.getElementById(id))
+      {
+         document.getElementById(id).innerHTML = GetElementNodeValue(xmlDoc, id);
+      }
+      else
+         break;
+   }
+}
+
+function stateChanged()
+{
+   if (ajaxGet.readyState==4)
+   {
+      UpdateExistingTable(ajaxGet.responseXML.documentElement);
+
+      waiting = 0;
+  }
+}
+
+function GetXmlHttpObject()
+{
+   if (window.XMLHttpRequest)
+   {
+      // code for IE7+, Firefox, Chrome, Opera, Safari
+      return new XMLHttpRequest();
+   }
+   if (window.ActiveXObject)
+   {
+      // code for IE6, IE5
+      return new ActiveXObject("Microsoft.XMLHTTP");
+   }
+   return null;
+}
+
+</script>
+</head>
+<body onload="setStartTime('');" BGCOLOR=#FFFFFF STYLE="background-color: #FFFFFF;" ALINK=#FF0000>
+<h1>&nbsp;<img border="0" height="121" src="logo.jpg" style="height: 98px; width: 192px" width="283" /></h1>
+
+<p>PDU - <span style="white-space: normal; word-spacing: 0px; text-transform: none; float: none; color: rgb(34,34,34); text-align: justify; font: 13px arial; widows: 1; display: inline !important; letter-spacing: normal; background-color: rgb(255,255,255); text-indent: 0px; -webkit-text-stroke-width: 0px">Power Distribution Unit</span></p>
+
+<p><span style="white-space: normal; word-spacing: 0px; text-transform: none; float: none; color: rgb(37,37,37); font: 14px/22px sans-serif; widows: 1; display: inline !important; letter-spacing: normal; background-color: rgb(255,255,255); text-indent: 0px; -webkit-text-stroke-width: 0px">Remote monitoring and control by<span class="Apple-converted-space">&nbsp;</span></span><a class="mw-redirect" href="https://en.wikipedia.org/wiki/LAN" style="text-decoration: none; background: rgb(255,255,255); white-space: normal; word-spacing: 0px; text-transform: none; color: rgb(11,0,128); font: 14px/22px sans-serif; widows: 1; letter-spacing: normal; text-indent: 0px; -webkit-text-stroke-width: 0px" title="LAN">LAN</a>.</p>
+
+<p>Equipo de Investigacion y Desarrollo de Altec S.E.</p>
+
+<p>Charlie J L</p>
+
+<table border="1" style="height: 29px; width: 165px">
+	<tbody>
+		<tr>
+			<th>Sensor Corriente</th>
+			<td id="dyn0">&nbsp;</td>
+		</tr>
+	</tbody>
+</table>
+
+<form method="get" target="_top">
+<p>&nbsp;<input name="button00" onclick="sendCgi('button00','1')" size="14" style="height: 22px; width: 110px" type="button" value="Salida 1 " /></p>
+
+<p>&nbsp;<input name="button01" onclick="sendCgi('button01','1')" size="14" style="height: 22px; width: 110px" type="button" value="Salida 2 " /></p>
+
+<p>&nbsp;<input name="button02" onclick="sendCgi('button02','1')" size="14" style="height: 22px; width: 110px" type="button" value="Salida 3" /></p>
+
+<p>&nbsp;<input name="button03" onclick="sendCgi('button03','1')" size="14" style="height: 22px; width: 110px" type="button" value="Salida 4 " /></p>
+</form>
+
+<p>&nbsp;</p>
+</body>
+</html>

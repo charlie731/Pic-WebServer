@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+	<title></title>
+</head>
+<body>&nbsp;
+<p>&nbsp;</p>
+
+<h1>Simple Login Page</h1>
+
+<p>&nbsp;</p>
+
+<form name="login">Username<input name="userid" type="text" /> Password<input name="pswrd" type="password" /> <input onclick="check(this.form)" type="button" value="Login" /> <input type="reset" value="Cancel" />&nbsp;</form>
+<script language="javascript">
+            function check(form) { /*function to check userid & password*/
+                /*the following code checkes whether the entered userid and password are matching*/
+                if(form.userid.value == 'user' && form.pswrd.value == 'pwd') {
+                    window.open('inicio.htm')/*opens the target page while Id & password matches*/
+                }
+                else {
+                    alert("Error Password or Username")/*displays error message*/
+                }
+            }
+        </script></body>
+</html>
